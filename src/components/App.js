@@ -1,8 +1,12 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import {connect} from 'react-redux';
 import {handleInitialData} from "../actions/shared";
+import {BrowserRouter as Router, Route} from 'react-router-dom';
 import Dashboard from './Dashboard';
+import NewTweet from './NewTweet';
 import LoadingBar from 'react-redux-loading';
+import TweetPage from './TweetPage';
+import Nav from './Nav'
 
 class App extends Component {
   componentDidMount() {
@@ -11,14 +15,25 @@ class App extends Component {
 
   render() {
     return (
-      <div>
-          <LoadingBar />
-          {
-              this.props.loading
-              ? null
-                  : <Dashboard/>
-          }
-      </div>
+        <Router>
+            <Fragment> {/**We can only pass one element to the Router, so we would require to put our Loading Bar inside our container Dai, Fragment allows us to circumvent that without adding another external container div **/}
+                <LoadingBar />
+                <div className='container'>
+                    <Nav/>
+                    {
+                        this.props.loading
+                            ? null
+                            : (
+                                <div>
+                                    <Route path='/' exact component={Dashboard}/>
+                                    <Route path='/new' component={NewTweet}/>
+                                    <Route path='/tweet/:id' component={TweetPage} />
+                                </div>
+                            )
+                    }
+                </div>
+            </Fragment>
+        </Router>
     )
   }
 }

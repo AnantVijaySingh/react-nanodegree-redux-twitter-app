@@ -1,4 +1,4 @@
-import {RECEIVE_TWEETS, TOGGLE_TWEET} from '../actions/tweets';
+import {RECEIVE_TWEETS, TOGGLE_TWEET, ADD_TWEET} from '../actions/tweets';
 
 export default function tweets(state ={}, action) { // user ES6 syntax to set default state value to an empty object
     switch (action.type) {
@@ -16,6 +16,24 @@ export default function tweets(state ={}, action) { // user ES6 syntax to set de
                         ? state[action.id].likes.filter((uid) => uid !== action.authedUser)
                         : state[action.id].likes.concat([action.authedUser])
                 }
+            };
+            // We need to do two things, 1. Add the new tweet 2. If the tweet is a reply to another tweet then we need to add the new tweet id to the replies key of the tweet being replied too
+        case ADD_TWEET:
+            const { tweet } = action;
+
+            let replyingTo = {};
+            if (tweet.replyingTo !== null) {
+                replyingTo = {
+                    [tweet.replyingTo]: {
+                        ...state[tweet.replyingTo],
+                        replies: state[tweet.replyingTo].replies.concat([tweet.id])
+                    }
+                }
+            }
+            return {
+                ...state,
+                [action.tweet.id]: action.tweet,
+                ...replyingTo,
             };
         default:
             return state
