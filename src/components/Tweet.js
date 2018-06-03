@@ -4,12 +4,20 @@ import {formatTweet, formatDate} from "../utils/helpers";
 import TiArrowBackOutline from 'react-icons/lib/ti/arrow-back-outline';
 import TiHeartOutline from 'react-icons/lib/ti/heart-outline';
 import TiHeartFullOutline from 'react-icons/lib/ti/heart-full-outline';
+import {handleToggleTweet} from "../actions/tweets";
 
 class Tweet extends Component {
 
     handleLike = (e) => {
         e.preventDefault();
-        // increase or decrease the like count
+
+        const { dispatch, tweet, authedUser } = this.props;
+
+        dispatch(handleToggleTweet({
+            id: tweet.id,
+            hasLiked: tweet.hasLiked,
+            authedUser
+        }))
     };
 
     toParent = (e,id) => {
@@ -69,6 +77,7 @@ function mapStateToProps({authedUser, tweets, users}, {id}) { //using object dec
     const tweet = tweets[id];
     const parentTweet = tweet ? tweets[tweet.replyingTo] : null; // Avoiding error due to navigation to a tweet url that does not exist
 
+    // These are the props that are passed to the UI component
     return {
         authedUser,
         tweet: tweet ? formatTweet(tweet, users[tweet.author], authedUser, parentTweet) : null // Avoiding error due to navigation to a tweet url that does not exist
